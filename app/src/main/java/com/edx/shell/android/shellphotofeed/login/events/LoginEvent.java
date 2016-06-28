@@ -9,6 +9,7 @@ public class LoginEvent {
 
     private int eventType;
     private String errorMessage;
+    private String currentUserEmail;
 
     public int getEventType() {
         return eventType;
@@ -24,5 +25,13 @@ public class LoginEvent {
 
     public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
+    }
+
+    public String getCurrentUserEmail() {
+        return currentUserEmail;
+    }
+
+    public void setCurrentUserEmail(String currentUserEmail) {
+        this.currentUserEmail = currentUserEmail;
     }
 }
