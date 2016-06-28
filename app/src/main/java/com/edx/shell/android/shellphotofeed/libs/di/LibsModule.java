@@ -27,42 +27,37 @@ public class LibsModule {
         this.fragment = fragment;
     }
 
-    @Provides
-    @Singleton
+    @Provides @Singleton
     ImageLoader providesImageLoader(RequestManager manager) {
         return new GlideImageLoader(manager);
     }
 
-    @Provides
-    @Singleton
+    @Provides @Singleton
     RequestManager providesRequestManager(Fragment fragment) {
         return Glide.with(fragment);
     }
 
-    @Provides
-    @Singleton
+    @Provides @Singleton
     Fragment providesFragment() {
         return fragment;
     }
 
-    @Provides
-    @Singleton
+    @Provides @Singleton
     EventBus providesEventBus(org.greenrobot.eventbus.EventBus eventBus) {
         return new GreenRobotEventBus(eventBus);
     }
-    @Provides
-    @Singleton
+
+    @Provides @Singleton
     org.greenrobot.eventbus.EventBus providesLibraryEventBus() {
         return org.greenrobot.eventbus.EventBus.getDefault();
     }
 
-    @Provides
-    @Singleton
+    @Provides @Singleton
     ImageStorage providesImageStorage(Cloudinary cloudinary) {
         return new CloudinaryImageStorage(cloudinary);
     }
-    @Provides
-    @Singleton
+
+    @Provides @Singleton
     Cloudinary providesCloudinary(Context context) {
         return new Cloudinary(Utils.cloudinaryUrlFromContext(context));
     }

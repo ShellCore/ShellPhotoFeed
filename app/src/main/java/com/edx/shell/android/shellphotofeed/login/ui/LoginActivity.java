@@ -17,7 +17,8 @@ import com.edx.shell.android.shellphotofeed.MainActivity;
 import com.edx.shell.android.shellphotofeed.PhotoFeedApp;
 import com.edx.shell.android.shellphotofeed.R;
 import com.edx.shell.android.shellphotofeed.login.LoginPresenter;
-import com.edx.shell.android.shellphotofeed.login.events.LoginEvent;
+
+import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -29,8 +30,10 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
     private PhotoFeedApp app;
 
     // Servicios
-    private LoginPresenter loginPresenter;
-    private SharedPreferences sharedPreferences;
+    @Inject
+    LoginPresenter loginPresenter;
+    @Inject
+    SharedPreferences sharedPreferences;
 
     // Componentes
     @Bind(R.id.til_email)
@@ -55,38 +58,15 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
-
         app = (PhotoFeedApp) getApplication();
-
-//        loginPresenter = new LoginPresenterImpl(this);
-        loginPresenter = new LoginPresenter() {
-            @Override
-            public void onCreate() {
-
-            }
-
-            @Override
-            public void onDestroy() {
-
-            }
-
-            @Override
-            public void validateLogin(String email, String pass) {
-
-            }
-
-            @Override
-            public void registerNewUser(String email, String pass) {
-
-            }
-
-            @Override
-            public void onEventMainThread(LoginEvent loginEvent) {
-
-            }
-        };
+        setupInjection();
         loginPresenter.onCreate();
         loginPresenter.validateLogin(null, null);
+    }
+
+    private void setupInjection() {
+        app.getLoginComponent(this)
+                .inject(this);
     }
 
     @Override
