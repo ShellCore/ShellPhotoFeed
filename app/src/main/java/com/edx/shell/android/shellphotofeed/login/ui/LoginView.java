@@ -3,8 +3,8 @@ package com.edx.shell.android.shellphotofeed.login.ui;
 public interface LoginView {
     void enableInputs();
     void disableInputs();
-    void showProgressbar();
-    void hideProgressbar();
+    void showProgress();
+    void hideProgress();
 
     void handleSignin();
     void handleSignup();
@@ -15,5 +15,5 @@ public interface LoginView {
     void newUserSuccess();
     void newUserError(String error);
 
-    void setUserEmain(String email);
+    void setUserEmail(String email);
 }
