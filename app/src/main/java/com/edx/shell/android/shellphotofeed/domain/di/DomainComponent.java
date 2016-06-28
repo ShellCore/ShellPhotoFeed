@@ -9,5 +9,4 @@ import dagger.Component;
 @Singleton
 @Component(modules = {DomainModule.class, PhotoFeedAppModule.class})
 public interface DomainComponent {
-
 }

@@ -3,6 +3,11 @@ package com.edx.shell.android.shellphotofeed;
 import android.app.Application;
 
 import com.edx.shell.android.shellphotofeed.domain.di.DomainModule;
+import com.edx.shell.android.shellphotofeed.libs.di.LibsModule;
+import com.edx.shell.android.shellphotofeed.login.di.DaggerLoginComponent;
+import com.edx.shell.android.shellphotofeed.login.di.LoginComponent;
+import com.edx.shell.android.shellphotofeed.login.di.LoginModule;
+import com.edx.shell.android.shellphotofeed.login.ui.LoginView;
 import com.firebase.client.Firebase;
 
 public class PhotoFeedApp extends Application {
@@ -39,7 +44,13 @@ public class PhotoFeedApp extends Application {
         return SHARED_PREFERENCES_NAME;
     }
 
-    public String getFirebaseUrl() {
-        return FIREBASE_URL;
+    public LoginComponent getLoginComponent(LoginView view) {
+        return DaggerLoginComponent.builder()
+                .photoFeedAppModule(photoFeedAppModule)
+                .domainModule(domainModule)
+                .libsModule(new LibsModule(null))
+                .loginModule(new LoginModule(view))
+                .build();
+
     }
 }
