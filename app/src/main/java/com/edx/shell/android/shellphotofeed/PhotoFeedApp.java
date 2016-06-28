@@ -9,7 +9,7 @@ public class PhotoFeedApp extends Application {
 
     public static final String EMAIL_KEY = "email";
     public static final String SHARED_PREFERENCES_NAME = "UserPrefs";
-    public static final String FIREBASE_URL = "https://android-photo-share.firebaseio.com/";
+    public static final String FIREBASE_URL = "https://shell-photo-feed.firebaseio.com/";
 
     private PhotoFeedAppModule photoFeedAppModule;
     private DomainModule domainModule;
