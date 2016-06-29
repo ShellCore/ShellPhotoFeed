@@ -15,6 +15,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -22,9 +23,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.edx.shell.android.shellphotofeed.PhotoFeedApp;
+import com.edx.shell.android.shellphotofeed.PhotoListFragment;
+import com.edx.shell.android.shellphotofeed.PhotoMapFragment;
 import com.edx.shell.android.shellphotofeed.R;
 import com.edx.shell.android.shellphotofeed.login.ui.LoginActivity;
 import com.edx.shell.android.shellphotofeed.main.MainPresenter;
+import com.edx.shell.android.shellphotofeed.main.events.MainEvent;
 import com.edx.shell.android.shellphotofeed.main.ui.adapters.MainSectionsPagerAdapter;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -79,7 +83,48 @@ public class MainActivity extends AppCompatActivity implements MainView,
     }
 
     private void setupInjection() {
-        // TODO
+        // TODO Pruebas
+        String[] titles = new String[] {
+                getString(R.string.main_title_list),
+                getString(R.string.main_title_map)
+        };
+
+        Fragment[] fragments = new Fragment[] {
+                new PhotoListFragment(),
+                new PhotoMapFragment()
+        };
+
+        adapter = new MainSectionsPagerAdapter(getSupportFragmentManager(),
+                titles,
+                fragments);
+        sharedPreferences = getSharedPreferences(app.getSharedPreferencesName(), MODE_PRIVATE);
+        presenter = new MainPresenter() {
+            @Override
+            public void onCreate() {
+
+            }
+
+            @Override
+            public void onDestroy() {
+
+            }
+
+            @Override
+            public void logout() {
+
+            }
+
+            @Override
+            public void uploadPhoto(Location location, String path) {
+
+            }
+
+            @Override
+            public void onEventMainThread(MainEvent event) {
+
+            }
+        };
+        // TODO Fin pruebas
     }
 
     private void setupNavigation() {
@@ -182,6 +227,10 @@ public class MainActivity extends AppCompatActivity implements MainView,
                 .getLocationAvailability(apiClient)
                 .isLocationAvailable()) {
             lastKnownLocation = LocationServices.FusedLocationApi.getLastLocation(apiClient);
+            // TODO Pruebas
+            Snackbar.make(viewPager, lastKnownLocation.toString(), Snackbar.LENGTH_SHORT)
+                    .show();
+            // TODO Fin pruebas
         } else {
             Snackbar.make(viewPager, R.string.main_error_location_notAvailable, Snackbar.LENGTH_SHORT)
                     .show();
