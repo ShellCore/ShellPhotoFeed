@@ -1,13 +1,20 @@
 package com.edx.shell.android.shellphotofeed.main.ui;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -20,6 +27,7 @@ import com.edx.shell.android.shellphotofeed.login.ui.LoginActivity;
 import com.edx.shell.android.shellphotofeed.main.MainPresenter;
 import com.edx.shell.android.shellphotofeed.main.ui.adapters.MainSectionsPagerAdapter;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 
@@ -27,13 +35,18 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity implements MainView,
-                                                                GoogleApiClient.ConnectionCallbacks,
-                                                                GoogleApiClient.OnConnectionFailedListener {
+        GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener {
+
+    // Constantes
+    private static final int REQUEST_RESOLVE_ERROR = 0;
+    private static final int PERMISSIONS_REQUEST_LOCATION = 1;
 
     // Variables
     private PhotoFeedApp app;
     private Location lastKnownLocation;
     private GoogleApiClient apiClient;
+    private boolean resolvingError = false;
 
     // Servicios
     MainPresenter presenter;
@@ -41,6 +54,8 @@ public class MainActivity extends AppCompatActivity implements MainView,
     SharedPreferences sharedPreferences;
 
     // Componentes
+    @Bind(R.id.container)
+    CoordinatorLayout container;
     @Bind(R.id.toolbar)
     Toolbar toolbar;
     @Bind(R.id.tabs)
@@ -68,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements MainView,
     }
 
     private void setupNavigation() {
-        String email  =sharedPreferences.getString(app.getEmailKey(), getString(R.string.app_name));
+        String email = sharedPreferences.getString(app.getEmailKey(), getString(R.string.app_name));
         toolbar.setTitle(email);
         setSupportActionBar(toolbar);
 
@@ -152,16 +167,84 @@ public class MainActivity extends AppCompatActivity implements MainView,
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(
+                        new String[]{
+                                Manifest.permission.ACCESS_FINE_LOCATION,
+                                Manifest.permission.ACCESS_COARSE_LOCATION
+                        }, PERMISSIONS_REQUEST_LOCATION);
+            }
+            return;
+        }
 
+        if (LocationServices.FusedLocationApi
+                .getLocationAvailability(apiClient)
+                .isLocationAvailable()) {
+            lastKnownLocation = LocationServices.FusedLocationApi.getLastLocation(apiClient);
+        } else {
+            Snackbar.make(viewPager, R.string.main_error_location_notAvailable, Snackbar.LENGTH_SHORT)
+                    .show();
+        }
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_LOCATION:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if (LocationServices.FusedLocationApi
+                            .getLocationAvailability(apiClient)
+                            .isLocationAvailable()) {
+                        lastKnownLocation = LocationServices.FusedLocationApi.getLastLocation(apiClient);
+                    } else {
+                        Snackbar.make(viewPager, R.string.main_error_location_notAvailable, Snackbar.LENGTH_SHORT)
+                                .show();
+                    }
+                }
+                return;
+            default:
+                break;
+        }
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-
+        apiClient.connect();
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        if (resolvingError) {
+            return;
+        } else if (connectionResult.hasResolution()) {
+            resolvingError = true;
+            try {
+                connectionResult.startResolutionForResult(this, REQUEST_RESOLVE_ERROR);
+            } catch (IntentSender.SendIntentException e) {
+                e.printStackTrace();
+            }
+        } else {
+            resolvingError = true;
+            GoogleApiAvailability.getInstance()
+                    .getErrorDialog(this, connectionResult.getErrorCode(), REQUEST_RESOLVE_ERROR)
+                    .show();
+        }
+    }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_RESOLVE_ERROR) {
+            resolvingError = false;
+            if (resultCode == RESULT_OK) {
+                if (!apiClient.isConnecting()
+                        && !apiClient.isConnected()) {
+                    apiClient.connect();
+                }
+            }
+        }
     }
 }
