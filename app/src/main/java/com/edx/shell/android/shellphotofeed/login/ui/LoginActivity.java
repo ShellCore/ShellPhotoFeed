@@ -13,7 +13,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
-import com.edx.shell.android.shellphotofeed.MainActivity;
+import com.edx.shell.android.shellphotofeed.main.ui.MainActivity;
 import com.edx.shell.android.shellphotofeed.PhotoFeedApp;
 import com.edx.shell.android.shellphotofeed.R;
 import com.edx.shell.android.shellphotofeed.login.LoginPresenter;

@@ -1,6 +1,8 @@
 package com.edx.shell.android.shellphotofeed;
 
 import android.app.Application;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 
 import com.edx.shell.android.shellphotofeed.domain.di.DomainModule;
 import com.edx.shell.android.shellphotofeed.libs.di.LibsModule;
@@ -8,6 +10,10 @@ import com.edx.shell.android.shellphotofeed.login.di.DaggerLoginComponent;
 import com.edx.shell.android.shellphotofeed.login.di.LoginComponent;
 import com.edx.shell.android.shellphotofeed.login.di.LoginModule;
 import com.edx.shell.android.shellphotofeed.login.ui.LoginView;
+import com.edx.shell.android.shellphotofeed.main.di.DaggerMainComponent;
+import com.edx.shell.android.shellphotofeed.main.di.MainComponent;
+import com.edx.shell.android.shellphotofeed.main.di.MainModule;
+import com.edx.shell.android.shellphotofeed.main.ui.MainView;
 import com.firebase.client.Firebase;
 
 public class PhotoFeedApp extends Application {
@@ -52,5 +58,14 @@ public class PhotoFeedApp extends Application {
                 .loginModule(new LoginModule(view))
                 .build();
 
+    }
+
+    public MainComponent getMainComponent(MainView view, FragmentManager fm, Fragment[] fragments, String[] titles) {
+        return DaggerMainComponent.builder()
+                .photoFeedAppModule(photoFeedAppModule)
+                .domainModule(domainModule)
+                .libsModule(new LibsModule(null))
+                .mainModule(new MainModule(view, titles, fragments, fm))
+                .build();
     }
 }
