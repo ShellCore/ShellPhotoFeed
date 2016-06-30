@@ -102,7 +102,6 @@ public class MainActivity extends AppCompatActivity implements MainView,
     }
 
     private void setupInjection() {
-        // TODO Pruebas
         String[] titles = new String[] {
                 getString(R.string.main_title_list),
                 getString(R.string.main_title_map)
@@ -112,41 +111,6 @@ public class MainActivity extends AppCompatActivity implements MainView,
                 new PhotoListFragment(),
                 new PhotoMapFragment()
         };
-
-        adapter = new MainSectionsPagerAdapter(getSupportFragmentManager(),
-                titles,
-                fragments);
-        sharedPreferences = getSharedPreferences(app.getSharedPreferencesName(), MODE_PRIVATE);
-        presenter = new MainPresenter() {
-            @Override
-            public void onCreate() {
-
-            }
-
-            @Override
-            public void onDestroy() {
-
-            }
-
-            @Override
-            public void logout() {
-
-            }
-
-            @Override
-            public void uploadPhoto(Location location, String path) {
-                if (path != null) {
-                    Snackbar.make(viewPager, path, Snackbar.LENGTH_SHORT)
-                            .show();
-                }
-            }
-
-            @Override
-            public void onEventMainThread(MainEvent event) {
-
-            }
-        };
-        // TODO Fin pruebas
     }
 
     private void setupNavigation() {
@@ -219,17 +183,20 @@ public class MainActivity extends AppCompatActivity implements MainView,
 
     @Override
     public void onUploadInit() {
-
+        Snackbar.make(viewPager, R.string.main_notice_upload_init, Snackbar.LENGTH_SHORT)
+                .show();
     }
 
     @Override
     public void onUploadComplete() {
-
+        Snackbar.make(viewPager, R.string.main_notice_upload_complete, Snackbar.LENGTH_SHORT)
+                .show();
     }
 
     @Override
     public void onUploadError(String error) {
-
+        Snackbar.make(viewPager, error, Snackbar.LENGTH_SHORT)
+                .show();
     }
 
     @Override
