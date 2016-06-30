@@ -6,6 +6,7 @@ import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.database.Cursor;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
@@ -41,7 +42,10 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -57,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements MainView,
 
     // Constantes
     private static final int REQUEST_RESOLVE_ERROR = 0;
-    private static final int REQUEST_PICTURE = 0;
+    private static final int REQUEST_PICTURE = 1;
     private static final int PERMISSIONS_REQUEST_LOCATION = 1;
 
     // Variables
@@ -131,7 +135,10 @@ public class MainActivity extends AppCompatActivity implements MainView,
 
             @Override
             public void uploadPhoto(Location location, String path) {
-
+                if (path != null) {
+                    Snackbar.make(viewPager, path, Snackbar.LENGTH_SHORT)
+                            .show();
+                }
             }
 
             @Override
@@ -242,10 +249,6 @@ public class MainActivity extends AppCompatActivity implements MainView,
                 .getLocationAvailability(apiClient)
                 .isLocationAvailable()) {
             lastKnownLocation = LocationServices.FusedLocationApi.getLastLocation(apiClient);
-            // TODO Pruebas
-            Snackbar.make(viewPager, lastKnownLocation.toString(), Snackbar.LENGTH_SHORT)
-                    .show();
-            // TODO Fin pruebas
         } else {
             Snackbar.make(viewPager, R.string.main_error_location_notAvailable, Snackbar.LENGTH_SHORT)
                     .show();
@@ -309,7 +312,63 @@ public class MainActivity extends AppCompatActivity implements MainView,
                     apiClient.connect();
                 }
             }
+        } else if (requestCode == REQUEST_PICTURE) {
+            if (resultCode == RESULT_OK) {
+                boolean fromCamera = (data == null || data.getData() == null);
+                if (fromCamera) {
+                    addToGallery();
+                } else {
+                    photoPath = getRealPathFromUri(data.getData());
+                }
+                presenter.uploadPhoto(lastKnownLocation, photoPath);
+            }
         }
+    }
+
+    private void addToGallery() {
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        File file = new File(photoPath);
+        Uri contentUri = Uri.fromFile(file);
+        mediaScanIntent.setData(contentUri);
+        sendBroadcast(mediaScanIntent);
+    }
+
+    private String getRealPathFromUri(Uri contentUri) {
+        String result = null;
+        Cursor cursor = getContentResolver().query(contentUri, null, null, null, null);
+        if (cursor == null) {
+            result = contentUri.getPath();
+        } else {
+            if (contentUri.toString().toLowerCase().contains("mediakey")) {
+                cursor.close();
+                try {
+                    File file = File.createTempFile("tempImg", ".jpg", getCacheDir());
+                    InputStream input = getContentResolver().openInputStream(contentUri);
+                    OutputStream output = new FileOutputStream(file);
+                    try {
+                        byte[] buffer = new byte[4 * 1024];
+                        int read;
+
+                        while ((read = input.read(buffer)) != -1) {
+                            output.write(buffer, 0, read);
+                        }
+                        output.flush();
+                        result = file.getAbsolutePath();
+                    } finally {
+                        output.close();
+                        input.close();
+                    }
+                } catch (Exception e) {
+
+                }
+            } else {
+                cursor.moveToFirst();
+                int dataColumn = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+                result = cursor.getString(dataColumn);
+                cursor.close();
+            }
+        }
+        return result;
     }
 
     @OnClick(R.id.fab)
