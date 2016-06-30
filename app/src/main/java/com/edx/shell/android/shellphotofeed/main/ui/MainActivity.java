@@ -51,6 +51,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -72,8 +74,11 @@ public class MainActivity extends AppCompatActivity implements MainView,
     private String photoPath;
 
     // Servicios
+    @Inject
     MainPresenter presenter;
+    @Inject
     MainSectionsPagerAdapter adapter;
+    @Inject
     SharedPreferences sharedPreferences;
 
     // Componentes
@@ -111,6 +116,9 @@ public class MainActivity extends AppCompatActivity implements MainView,
                 new PhotoListFragment(),
                 new PhotoMapFragment()
         };
+
+        app.getMainComponent(this, getSupportFragmentManager(), fragments, titles)
+                .inject(this);
     }
 
     private void setupNavigation() {
