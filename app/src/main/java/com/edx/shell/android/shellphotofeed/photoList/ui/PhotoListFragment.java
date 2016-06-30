@@ -1,4 +1,4 @@
-package com.edx.shell.android.shellphotofeed;
+package com.edx.shell.android.shellphotofeed.photoList.ui;
 
 
 import android.os.Bundle;
@@ -6,6 +6,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.edx.shell.android.shellphotofeed.R;
 
 
 /**
