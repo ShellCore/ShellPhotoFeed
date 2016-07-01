@@ -20,6 +20,11 @@ import com.edx.shell.android.shellphotofeed.photoList.di.PhotoListComponent;
 import com.edx.shell.android.shellphotofeed.photoList.di.PhotoListModule;
 import com.edx.shell.android.shellphotofeed.photoList.ui.PhotoListFragment;
 import com.edx.shell.android.shellphotofeed.photoList.ui.PhotoListView;
+import com.edx.shell.android.shellphotofeed.photoMap.di.DaggerPhotoMapComponent;
+import com.edx.shell.android.shellphotofeed.photoMap.di.PhotoMapComponent;
+import com.edx.shell.android.shellphotofeed.photoMap.di.PhotoMapModule;
+import com.edx.shell.android.shellphotofeed.photoMap.ui.PhotoMapFragment;
+import com.edx.shell.android.shellphotofeed.photoMap.ui.PhotoMapView;
 import com.firebase.client.Firebase;
 
 public class PhotoFeedApp extends Application {
@@ -82,6 +87,14 @@ public class PhotoFeedApp extends Application {
                 .libsModule(new LibsModule(fragment))
                 .photoListModule(new PhotoListModule(view, clickListener))
                 .build();
+    }
 
+    public PhotoMapComponent getPhotoMapComponent(PhotoMapFragment fragment, PhotoMapView view) {
+        return DaggerPhotoMapComponent.builder()
+                .photoFeedAppModule(photoFeedAppModule)
+                .domainModule(domainModule)
+                .libsModule(new LibsModule(fragment))
+                .photoMapModule(new PhotoMapModule(view))
+                .build();
     }
 }
