@@ -12,10 +12,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.edx.shell.android.shellphotofeed.PhotoFeedApp;
 import com.edx.shell.android.shellphotofeed.R;
+import com.edx.shell.android.shellphotofeed.domain.Util;
 import com.edx.shell.android.shellphotofeed.entities.Photo;
+import com.edx.shell.android.shellphotofeed.libs.base.ImageLoader;
 import com.edx.shell.android.shellphotofeed.photoMap.PhotoMapPresenter;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -32,8 +36,9 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
 
-public class PhotoMapFragment extends Fragment implements PhotoMapView, OnMapReadyCallback {
+public class PhotoMapFragment extends Fragment implements PhotoMapView, OnMapReadyCallback, GoogleMap.InfoWindowAdapter {
 
     // Constantes
     private static final int PERMISSIONS_REQUEST_LOCATION = 1;
@@ -43,10 +48,13 @@ public class PhotoMapFragment extends Fragment implements PhotoMapView, OnMapRea
     private GoogleMap map;
     private HashMap<Marker, Photo> markers;
 
-
     // Servicios
     @Inject
     PhotoMapPresenter presenter;
+    @Inject
+    Util util;
+    @Inject
+    ImageLoader imageLoader;
 
     // Componentes
     @Bind(R.id.map_container)
@@ -60,7 +68,6 @@ public class PhotoMapFragment extends Fragment implements PhotoMapView, OnMapRea
         super.onCreate(savedInstanceState);
         setupInjection();
         markers = new HashMap<>();
-
         presenter.onCreate();
     }
 
@@ -102,6 +109,7 @@ public class PhotoMapFragment extends Fragment implements PhotoMapView, OnMapRea
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
         presenter.subscribe();
+        map.setInfoWindowAdapter(this);
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 requestPermissions(
@@ -156,5 +164,27 @@ public class PhotoMapFragment extends Fragment implements PhotoMapView, OnMapRea
     @Override
     public void onPhotoError(String error) {
 
+    }
+
+    @Override
+    public View getInfoWindow(Marker marker) {
+        return null;
+    }
+
+    @Override
+    public View getInfoContents(Marker marker) {
+        View view = getActivity().getLayoutInflater()
+                .inflate(R.layout.info_window, null);
+        Photo photo = markers.get(marker);
+
+        CircleImageView imgAvatar = (CircleImageView) view.findViewById(R.id.img_avatar);
+        TextView txtUser = (TextView) view.findViewById(R.id.txt_user);
+        ImageView imgPhoto = (ImageView) view.findViewById(R.id.img_photo);
+
+        imageLoader.load(imgAvatar, util.getAvatarUrl(photo.getEmail()));
+        imageLoader.load(imgPhoto, photo.getUrl());
+        txtUser.setText(photo.getEmail());
+
+        return view;
     }
 }
