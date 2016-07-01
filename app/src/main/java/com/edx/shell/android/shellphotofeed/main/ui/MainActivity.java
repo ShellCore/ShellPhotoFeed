@@ -29,12 +29,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.edx.shell.android.shellphotofeed.PhotoFeedApp;
-import com.edx.shell.android.shellphotofeed.PhotoListFragment;
+import com.edx.shell.android.shellphotofeed.photoList.ui.PhotoListFragment;
 import com.edx.shell.android.shellphotofeed.PhotoMapFragment;
 import com.edx.shell.android.shellphotofeed.R;
 import com.edx.shell.android.shellphotofeed.login.ui.LoginActivity;
 import com.edx.shell.android.shellphotofeed.main.MainPresenter;
-import com.edx.shell.android.shellphotofeed.main.events.MainEvent;
 import com.edx.shell.android.shellphotofeed.main.ui.adapters.MainSectionsPagerAdapter;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;

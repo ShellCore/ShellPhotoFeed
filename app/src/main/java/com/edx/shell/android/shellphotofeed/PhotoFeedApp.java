@@ -14,6 +14,12 @@ import com.edx.shell.android.shellphotofeed.main.di.DaggerMainComponent;
 import com.edx.shell.android.shellphotofeed.main.di.MainComponent;
 import com.edx.shell.android.shellphotofeed.main.di.MainModule;
 import com.edx.shell.android.shellphotofeed.main.ui.MainView;
+import com.edx.shell.android.shellphotofeed.photoList.adapters.OnItemClickListener;
+import com.edx.shell.android.shellphotofeed.photoList.di.DaggerPhotoListComponent;
+import com.edx.shell.android.shellphotofeed.photoList.di.PhotoListComponent;
+import com.edx.shell.android.shellphotofeed.photoList.di.PhotoListModule;
+import com.edx.shell.android.shellphotofeed.photoList.ui.PhotoListFragment;
+import com.edx.shell.android.shellphotofeed.photoList.ui.PhotoListView;
 import com.firebase.client.Firebase;
 
 public class PhotoFeedApp extends Application {
@@ -67,5 +73,15 @@ public class PhotoFeedApp extends Application {
                 .libsModule(new LibsModule(null))
                 .mainModule(new MainModule(view, titles, fragments, fm))
                 .build();
+    }
+
+    public PhotoListComponent getPhotoListComponent(PhotoListFragment fragment, PhotoListView view, OnItemClickListener clickListener) {
+        return DaggerPhotoListComponent.builder()
+                .photoFeedAppModule(photoFeedAppModule)
+                .domainModule(domainModule)
+                .libsModule(new LibsModule(fragment))
+                .photoListModule(new PhotoListModule(view, clickListener))
+                .build();
+
     }
 }
