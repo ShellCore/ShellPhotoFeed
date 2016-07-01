@@ -18,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
+import com.edx.shell.android.shellphotofeed.PhotoFeedApp;
 import com.edx.shell.android.shellphotofeed.R;
 import com.edx.shell.android.shellphotofeed.entities.Photo;
 import com.edx.shell.android.shellphotofeed.photoList.PhotoListPresenter;
@@ -58,7 +59,9 @@ public class PhotoListFragment extends Fragment implements PhotoListView, OnItem
     }
 
     private void setupInjection() {
-
+        PhotoFeedApp app = (PhotoFeedApp) getActivity().getApplication();
+        app.getPhotoListComponent(this, this, this)
+                .inject(this);
     }
 
     @Override
