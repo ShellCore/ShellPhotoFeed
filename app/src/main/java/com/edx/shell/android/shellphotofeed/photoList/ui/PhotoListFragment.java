@@ -90,7 +90,7 @@ public class PhotoListFragment extends Fragment implements PhotoListView, OnItem
     }
 
     @Override
-    public void ShowList() {
+    public void showList() {
         recyclerList.setVisibility(View.VISIBLE);
     }
 
