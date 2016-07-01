@@ -30,7 +30,7 @@ import android.view.MenuItem;
 
 import com.edx.shell.android.shellphotofeed.PhotoFeedApp;
 import com.edx.shell.android.shellphotofeed.photoList.ui.PhotoListFragment;
-import com.edx.shell.android.shellphotofeed.PhotoMapFragment;
+import com.edx.shell.android.shellphotofeed.photoMap.ui.PhotoMapFragment;
 import com.edx.shell.android.shellphotofeed.R;
 import com.edx.shell.android.shellphotofeed.login.ui.LoginActivity;
 import com.edx.shell.android.shellphotofeed.main.MainPresenter;
